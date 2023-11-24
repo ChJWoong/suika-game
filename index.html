@@ -6,16 +6,16 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.js"></script>
     <title>Suika-Game</title>
     <style>
-      body {
-        height: 100vh;
-      }
-
       .container {
         display: flex;
         justify-content: center;
         align-items: center;
         min-height: 100dvh;
         background-color: antiquewhite;
+      }
+
+      #game {
+        height: 100%;
       }
     </style>
   </head>
@@ -284,8 +284,9 @@
         return window.innerHeight / window.innerWidth >= 1.49;
       }
 
-      window.addEventListener("resize", resize);
       resize();
+      window.addEventListener("resize", resize);
+
       addFruit();
     </script>
   </body>
