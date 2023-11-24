@@ -199,7 +199,7 @@ window.onkeyup = function (event) {
 };
 
 window.ontouchstart = function (event) {
-  document.getElementById("asd").innerHTML = String(event.changedTouches.length);
+  document.getElementById("asd").innerHTML = String(event.Touches.length);
 };
 
 window.ontouchmove = function (event) {
