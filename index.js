@@ -45,6 +45,7 @@ const ground = Bodies.rectangle(310, 720, 620, 60, {
 });
 
 const topLine = Bodies.rectangle(310, 150, 620, 2, {
+  name: "Top Line",
   isStatic: true,
   isSensor: true,
   render: { fillStyle: "#E6B143" },
@@ -276,6 +277,11 @@ Events.on(engine, "collisionStart", function (event) {
           alert("수박 완성!");
         }, 500);
       }
+    }
+
+    if (!disable && (collision.bodyA.name === "Top Line" || collision.bodyB.name === "Top Line")) {
+      alert("실패!");
+      location.reload(true);
     }
   });
 });
