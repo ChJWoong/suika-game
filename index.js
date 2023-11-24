@@ -222,12 +222,12 @@ window.ontouchmove = function (event) {
 
     if (touchX - currentFruit.radius > 15 && touchX + currentFruit.radius < 465) {
       if (isMobile) {
-        Body.setPosition(currentBody, { x: touchX / parent.style.zoom, y: currentBody.position.y });
+        Body.setPosition(currentBody, { x: touchX, y: currentBody.position.y });
       } else {
         Body.setPosition(currentBody, { x: touchX, y: currentBody.position.y });
       }
 
-      // document.getElementById("asd").innerHTML = `${touchX}, ${currentBody.position.x}, v4`;
+      document.getElementById("asd").innerHTML = `${touchX}, ${parent.style.zoom}, v4`;
     }
   }
 };
