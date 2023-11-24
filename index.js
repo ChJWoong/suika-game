@@ -203,9 +203,9 @@ window.onkeyup = function (event) {
 window.ontouchstart = function (event) {
   if (!disable && !isTouching) {
     let touch = event.touches[0];
-    let touchX = touch.clientX;
+    let touchX = touch.clientX / parent.style.zoom;
     isTouching = true;
-    if (touchX - currentFruit.radius > 20 && touchX + currentFruit.radius < 470) {
+    if (touchX - currentFruit.radius > 15 && touchX + currentFruit.radius < 465) {
       Body.setPosition(currentBody, { x: touchX, y: currentBody.position.y });
     }
   } else {
@@ -219,7 +219,7 @@ window.ontouchmove = function (event) {
     let touch = event.touches[0];
 
     let touchX = touch.clientX / parent.style.zoom;
-    document.getElementById("asd").innerHTML = `${currentBody.position.x}, ${touchX / parent.style.zoom}, v5`;
+    // document.getElementById("asd").innerHTML = `${currentBody.position.x}, ${touchX / parent.style.zoom}, v5`;
     if (touchX - currentFruit.radius > 15 && touchX + currentFruit.radius < 465) {
       if (isMobile) {
         Body.setPosition(currentBody, { x: touchX, y: currentBody.position.y });
