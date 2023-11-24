@@ -180,6 +180,8 @@ window.onkeydown = function (event) {
       case "KeyS":
         disable = true;
         currentBody.isSleeping = false;
+        clearInterval(interval);
+        interval = null;
         setTimeout(function () {
           addFruit();
           disable = false;
@@ -208,6 +210,7 @@ window.ontouchstart = function (event) {
       document.getElementById("asd").innerHTML = `${disable}, ${isTouching}, v2`;
     }
   } else {
+    event.preventDefault();
     return;
   }
 };
@@ -217,11 +220,11 @@ window.ontouchmove = function (event) {
     let touch = event.touches[0];
 
     let touchX = touch.clientX;
-    let pageX = touch.pageX;
+    let fixedX = (touch.clientX / window.innerWidth) * 100;
 
     if (touchX - currentFruit.radius > 15 && touchX + currentFruit.radius < 465) {
       Body.setPosition(currentBody, { x: touchX, y: currentBody.position.y });
-      document.getElementById("asd").innerHTML = `${touchX}, ${currentBody.x}, v3`;
+      document.getElementById("asd").innerHTML = `${touchX}, ${fixedX}, ${currentBody.position.x}, v4`;
     }
   }
 };
@@ -236,16 +239,6 @@ window.ontouchend = function (event) {
     }, 500);
   }
 };
-
-document.documentElement.addEventListener(
-  "touchstart",
-  function (event) {
-    if (event.touches.length > 1) {
-      event.preventDefault();
-    }
-  },
-  false
-);
 
 Events.on(engine, "collisionStart", function (event) {
   event.pairs.forEach(function (collision) {
