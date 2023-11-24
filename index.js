@@ -284,7 +284,7 @@ function resize() {
     parent.style.zoom = window.innerWidth / 480;
     parent.style.top = "0px";
   } else {
-    parent.style.zoom = window.innerHeight / 720 / 1.3;
+    parent.style.zoom = window.innerHeight / 720 / 1;
     parent.style.top = `${(game.height * parent.style.zoom) / 15}px`;
   }
 
@@ -295,7 +295,7 @@ function isMobile() {
   return window.innerHeight / window.innerWidth >= 1.49;
 }
 
-// resize();
+resize();
 window.addEventListener("resize", resize);
 
 addFruit();
