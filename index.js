@@ -158,11 +158,10 @@ window.onkeydown = function (event) {
         }
 
         interval = setInterval(function () {
-          if (currentBody.position.x - currentFruit.radius > 15) {
+          if (currentBody.position.x - currentFruit.radius > 20) {
             Body.setPosition(currentBody, { x: currentBody.position.x - 10, y: currentBody.position.y });
           }
         }, 20);
-
         break;
 
       case "KeyD":
@@ -171,7 +170,7 @@ window.onkeydown = function (event) {
         }
 
         interval = setInterval(function () {
-          if (currentBody.position.x + currentFruit.radius < 465) {
+          if (currentBody.position.x + currentFruit.radius < 460) {
             Body.setPosition(currentBody, { x: currentBody.position.x + 10, y: currentBody.position.y });
           }
         }, 20);
@@ -206,7 +205,7 @@ window.ontouchstart = function (event) {
     let touch = event.touches[0];
     let touchX = touch.clientX;
     isTouching = true;
-    if (touchX - currentFruit.radius > 15 && touchX + currentFruit.radius < 465) {
+    if (touchX - currentFruit.radius > 20 && touchX + currentFruit.radius < 470) {
       Body.setPosition(currentBody, { x: touchX, y: currentBody.position.y });
     }
   } else {
@@ -223,7 +222,7 @@ window.ontouchmove = function (event) {
 
     if (touchX - currentFruit.radius > 15 && touchX + currentFruit.radius < 465) {
       if (isMobile) {
-        Body.setPosition(currentBody, { x: (touchX * window.innerWidth) / 480, y: currentBody.position.y });
+        Body.setPosition(currentBody, { x: (touchX * 480) / window.innerWidth, y: currentBody.position.y });
       } else {
         Body.setPosition(currentBody, { x: touchX, y: currentBody.position.y });
       }
