@@ -220,11 +220,10 @@ window.ontouchmove = function (event) {
     let touch = event.touches[0];
 
     let touchX = touch.clientX;
-    let fixedX = (touch.clientX / window.innerWidth) * 100;
 
     if (touchX - currentFruit.radius > 15 && touchX + currentFruit.radius < 465) {
       Body.setPosition(currentBody, { x: touchX, y: currentBody.position.y });
-      document.getElementById("asd").innerHTML = `${touchX}, ${fixedX}, ${currentBody.position.x}, v4`;
+      document.getElementById("asd").innerHTML = `${touchX}, ${currentBody.position.x}, v4`;
     }
   }
 };
@@ -296,7 +295,7 @@ function isMobile() {
   return window.innerHeight / window.innerWidth >= 1.49;
 }
 
-resize();
+// resize();
 window.addEventListener("resize", resize);
 
 addFruit();
