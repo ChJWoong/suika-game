@@ -198,7 +198,7 @@ window.onkeyup = function (event) {
 };
 
 window.ontouchstart = function (event) {
-  document.write("gdgd");
+  document.write(event.changedTouches.length);
 };
 
 window.ontouchmove = function (event) {
