@@ -207,7 +207,6 @@ window.ontouchstart = function (event) {
     isTouching = true;
     if (touchX - currentFruit.radius > 15 && touchX + currentFruit.radius < 465) {
       Body.setPosition(currentBody, { x: touchX, y: currentBody.position.y });
-      document.getElementById("asd").innerHTML = `${disable}, ${isTouching}, v2`;
     }
   } else {
     event.preventDefault();
@@ -223,7 +222,7 @@ window.ontouchmove = function (event) {
 
     if (touchX - currentFruit.radius > 15 && touchX + currentFruit.radius < 465) {
       Body.setPosition(currentBody, { x: touchX, y: currentBody.position.y });
-      document.getElementById("asd").innerHTML = `${touchX}, ${currentBody.position.x}, v4`;
+      // document.getElementById("asd").innerHTML = `${touchX}, ${currentBody.position.x}, v4`;
     }
   }
 };
@@ -284,7 +283,7 @@ function resize() {
     parent.style.zoom = window.innerWidth / 480;
     parent.style.top = "0px";
   } else {
-    parent.style.zoom = window.innerHeight / 720 / 1;
+    parent.style.zoom = window.innerHeight / 720 / 1.4;
     parent.style.top = `${(game.height * parent.style.zoom) / 15}px`;
   }
 
