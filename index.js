@@ -199,7 +199,7 @@ window.onkeyup = function (event) {
 
 window.ontouchstart = function (event) {
   if (!isTouching && !disable) {
-    isTouchiing = True;
+    isTouching = True;
   }
 };
 
