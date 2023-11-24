@@ -198,9 +198,7 @@ window.onkeyup = function (event) {
 };
 
 window.ontouchstart = function (event) {
-  if (!disable) {
-    onTouchList.push(event.touches[0]);
-  }
+  document.write(event.changedTouches);
 };
 
 window.ontouchmove = function (event) {
