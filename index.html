@@ -217,7 +217,6 @@
                 addFruit();
                 disable = false;
               }, 500);
-
               break;
           }
         }
@@ -233,18 +232,21 @@
       };
 
       window.ontouchmove = function (event) {
-        let touch = event.touches[0];
+        if (disable == false) {
+          let touch = event.touches[0];
 
-        let touchX = touch.clientX;
-        let touchY = touch.clientY;
+          let touchX = touch.clientX;
+          let touchY = touch.clientY;
 
-        if (touchX - currentFruit.radius > 15 && touchX + currentFruit.radius < 465) {
-          Body.setPosition(currentBody, { x: touchX, y: currentBody.position.y });
+          if (touchX - currentFruit.radius > 15 && touchX + currentFruit.radius < 465) {
+            Body.setPosition(currentBody, { x: touchX, y: currentBody.position.y });
+          }
         }
       };
+
       window.ontouchend = function (event) {
-        currentBody.isSleeping = false;
         disable = true;
+        currentBody.isSleeping = false;
         setTimeout(function () {
           addFruit();
           disable = false;
