@@ -233,7 +233,7 @@
       };
 
       window.ontouchstart = function (event) {
-        if (!isTouching) {
+        if (!isTouching & !disable) {
           isTouchiing = True;
         }
       };
