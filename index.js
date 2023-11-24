@@ -207,9 +207,9 @@ window.ontouchstart = function (event) {
       Body.setPosition(currentBody, { x: touchX, y: currentBody.position.y });
     }
   } else {
+    document.getElementById("asd").innerHTML = `${disable}, ${isTouching}, v1`;
     return;
   }
-  document.getElementById("asd").innerHTML = `${disable}, ${isTouching}`;
 };
 
 window.ontouchmove = function (event) {
