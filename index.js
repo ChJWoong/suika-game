@@ -221,7 +221,7 @@ window.ontouchmove = function (event) {
 
     if (touchX - currentFruit.radius > 15 && touchX + currentFruit.radius < 465) {
       Body.setPosition(currentBody, { x: touchX, y: currentBody.position.y });
-      document.getElementById("asd").innerHTML = `${touchX}, ${pageX}, v2`;
+      document.getElementById("asd").innerHTML = `${touchX}, ${currentBody.x}, v3`;
     }
   }
 };
@@ -236,6 +236,16 @@ window.ontouchend = function (event) {
     }, 500);
   }
 };
+
+document.documentElement.addEventListener(
+  "touchstart",
+  function (event) {
+    if (event.touches.length > 1) {
+      event.preventDefault();
+    }
+  },
+  false
+);
 
 Events.on(engine, "collisionStart", function (event) {
   event.pairs.forEach(function (collision) {
