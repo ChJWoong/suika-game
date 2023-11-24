@@ -219,7 +219,7 @@ window.ontouchmove = function (event) {
     let touch = event.touches[0];
 
     let touchX = touch.clientX;
-    document.getElementById("asd").innerHTML = `${touchX}, ${parent.style.zoom}, v4`;
+    document.getElementById("asd").innerHTML = `${touchX}, ${touchX / parent.style.zoom}, v5`;
     if (touchX - currentFruit.radius > 15 && touchX + currentFruit.radius < 465) {
       if (isMobile) {
         Body.setPosition(currentBody, { x: touchX / parent.style.zoom, y: currentBody.position.y });
