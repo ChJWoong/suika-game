@@ -168,6 +168,7 @@ window.onkeydown = function (event) {
         if (interval) {
           return;
         }
+
         interval = setInterval(function () {
           if (currentBody.position.x + currentFruit.radius < 465) {
             Body.setPosition(currentBody, { x: currentBody.position.x + 10, y: currentBody.position.y });
@@ -198,7 +199,7 @@ window.onkeyup = function (event) {
 };
 
 window.ontouchstart = function (event) {
-  document.write(event.changedTouches.length);
+  document.getElementById("asd").innerHTML = String(event.changedTouches.length);
 };
 
 window.ontouchmove = function (event) {
