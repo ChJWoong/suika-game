@@ -280,10 +280,10 @@ function resize() {
   game.width = 480;
 
   if (isMobile()) {
-    parent.style.zoom = window.innerWidth / 480;
+    parent.style.zoom = 1;
     parent.style.top = "0px";
   } else {
-    parent.style.zoom = window.innerHeight / 720 / 1.4;
+    parent.style.zoom = window.innerHeight / 720 / 1.3;
     parent.style.top = `${(game.height * parent.style.zoom) / 15}px`;
   }
 
