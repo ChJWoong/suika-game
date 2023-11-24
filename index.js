@@ -221,7 +221,12 @@ window.ontouchmove = function (event) {
     let touchX = touch.clientX;
 
     if (touchX - currentFruit.radius > 15 && touchX + currentFruit.radius < 465) {
-      Body.setPosition(currentBody, { x: touchX, y: currentBody.position.y });
+      if (isMobile) {
+        Body.setPosition(currentBody, { x: (touchX * window.innerWidth) / 480, y: currentBody.position.y });
+      } else {
+        Body.setPosition(currentBody, { x: touchX, y: currentBody.position.y });
+      }
+
       // document.getElementById("asd").innerHTML = `${touchX}, ${currentBody.position.x}, v4`;
     }
   }
@@ -280,7 +285,7 @@ function resize() {
   game.width = 480;
 
   if (isMobile()) {
-    parent.style.zoom = 1;
+    parent.style.zoom = window.innerWidth / 480;
     parent.style.top = "0px";
   } else {
     parent.style.zoom = window.innerHeight / 720 / 1.3;
