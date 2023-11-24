@@ -67,7 +67,7 @@ let currentFruit = null;
 let disable = false;
 let interval = null;
 let numSuika = 0;
-let onTouchList = [];
+let isTouching = false;
 
 const FRUITS = [
   {
@@ -149,7 +149,7 @@ function addFruit() {
 }
 
 window.onkeydown = function (event) {
-  if (disable == false) {
+  if (!disable) {
     switch (event.code) {
       case "KeyA":
         if (interval) {
@@ -199,11 +199,21 @@ window.onkeyup = function (event) {
 };
 
 window.ontouchstart = function (event) {
-  document.getElementById("asd").innerHTML = String(event.Touches.length);
+  if (!disable && !isTouching) {
+    let touch = event.touches[0];
+    let touchX = touch.clientX;
+    isTouching = true;
+    if (touchX - currentFruit.radius > 15 && touchX + currentFruit.radius < 465) {
+      Body.setPosition(currentBody, { x: touchX, y: currentBody.position.y });
+    }
+  } else {
+    return;
+  }
+  document.getElementById("asd").innerHTML = `${disable}, ${isTouching}`;
 };
 
 window.ontouchmove = function (event) {
-  if (disable == false) {
+  if (!disable) {
     let touch = event.touches[0];
 
     let touchX = touch.clientX;
@@ -215,15 +225,14 @@ window.ontouchmove = function (event) {
 };
 
 window.ontouchend = function (event) {
-  if (event.changedTouches.length != 1) {
-    return;
+  if (!disable && isTouching) {
+    disable = true;
+    currentBody.isSleeping = false;
+    setTimeout(function () {
+      addFruit();
+      disable = false;
+    }, 500);
   }
-  disable = true;
-  currentBody.isSleeping = false;
-  setTimeout(function () {
-    addFruit();
-    disable = false;
-  }, 500);
 };
 
 Events.on(engine, "collisionStart", function (event) {
