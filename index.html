@@ -232,8 +232,8 @@
               break;
 
             case "KeyS":
-              currentBody.isSleeping = false;
               disable = true;
+              currentBody.isSleeping = false;
               setTimeout(function () {
                 addFruit();
                 disable = false;
@@ -251,6 +251,25 @@
             clearInterval(interval);
             interval = null;
         }
+      };
+
+      window.ontouchmove = function (event) {
+        let touch = event.touches[0];
+
+        let touchX = touch.clientX;
+        let touchY = touch.clientY;
+
+        if (touchX - currentFruit.radius > 15 && touchX + currentFruit.radius < 465) {
+          Body.setPosition(currentBody, { x: touchX, y: currentBody.position.y });
+        }
+      };
+      window.ontouchend = function (event) {
+        currentBody.isSleeping = false;
+        disable = true;
+        setTimeout(function () {
+          addFruit();
+          disable = false;
+        }, 500);
       };
 
       Events.on(engine, "collisionStart", function (event) {
@@ -297,8 +316,6 @@
         if (isMobile()) {
           parent.style.zoom = window.innerWidth / 480;
           parent.style.top = "0px";
-
-          floor.style.height = `${(window.innerHeight - game.height * parent.style.zoom) / parent.style.zoom}px`;
         } else {
           parent.style.zoom = window.innerHeight / 720 / 1.3;
           parent.style.top = `${(game.height * parent.style.zoom) / 15}px`;
