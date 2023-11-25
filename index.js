@@ -69,6 +69,8 @@ let disable = false;
 let interval = null;
 let numSuika = 0;
 let isTouching = false;
+let isCollisionInProgress = false;
+let score = 0;
 
 const FRUITS = [
   {
@@ -145,7 +147,7 @@ function addFruit() {
 
   currentBody = body;
   currentFruit = fruit;
-
+  Body.setMass(body, fruit.radius * fruit.radius);
   World.add(world, body);
 }
 
@@ -219,7 +221,7 @@ window.ontouchmove = function (event) {
     let touch = event.touches[0];
 
     let touchX = touch.clientX / parent.style.zoom;
-    // document.getElementById("asd").innerHTML = `${currentBody.position.x}, ${touchX / parent.style.zoom}, v5`;
+
     if (touchX - currentFruit.radius > 15 && touchX + currentFruit.radius < 465) {
       if (isMobile) {
         Body.setPosition(currentBody, { x: touchX, y: currentBody.position.y });
@@ -242,8 +244,14 @@ window.ontouchend = function (event) {
 };
 
 Events.on(engine, "collisionStart", function (event) {
+  if (isCollisionInProgress) {
+    return;
+  }
+
   event.pairs.forEach(function (collision) {
     if (collision.bodyA.index === collision.bodyB.index) {
+      isCollisionInProgress = true;
+
       const index = collision.bodyA.index;
 
       if (index === FRUITS.length - 1) {
@@ -251,6 +259,8 @@ Events.on(engine, "collisionStart", function (event) {
       }
 
       World.remove(world, [collision.bodyA, collision.bodyB]);
+      score += (index + 1) * 2;
+      document.getElementById("asd").innerHTML = `점수 : ${score}`;
 
       const newFruit = FRUITS[index + 1];
 
@@ -263,11 +273,18 @@ Events.on(engine, "collisionStart", function (event) {
         },
         restitution: 0.3,
       });
-
+      Body.setMass(newBody, newFruit.radius * newFruit.radius);
       World.add(world, newBody);
+      Body.scale(newBody, 3 / 2, 3 / 2);
+      setTimeout(function () {
+        Body.scale(newBody, 2 / 3, 2 / 3);
+        isCollisionInProgress = false;
+      }, 1);
+
       if (newBody.index == 10) {
         numSuika += 1;
       }
+
       if (numSuika == 1) {
         setTimeout(function () {
           console.log(numSuika);
