@@ -286,13 +286,8 @@ Events.on(engine, "collisionStart", function (event) {
 
       if (newBody.index == 10) {
         numSuika += 1;
-      }
-
-      if (numSuika == 1) {
-        setTimeout(function () {
-          console.log(numSuika);
-          alert("수박 완성!");
-        }, 500);
+        alert("수박 완성!");
+        newBody = null;
       }
     }
 
