@@ -147,7 +147,7 @@ function addFruit() {
 
   currentBody = body;
   currentFruit = fruit;
-  Body.setMass(body, fruit.radius * fruit.radius);
+  Body.setMass(body, fruit.radius * 2);
   World.add(world, body);
 }
 
@@ -244,6 +244,7 @@ window.ontouchend = function (event) {
 };
 
 Events.on(engine, "collisionStart", function (event) {
+  document.getElementById("asd").innerHTML = `점수 : ${score}`;
   if (isCollisionInProgress) {
     return;
   }
@@ -260,7 +261,6 @@ Events.on(engine, "collisionStart", function (event) {
 
       World.remove(world, [collision.bodyA, collision.bodyB]);
       score += (index + 1) * 2;
-      document.getElementById("asd").innerHTML = `점수 : ${score}`;
 
       const newFruit = FRUITS[index + 1];
 
@@ -273,7 +273,7 @@ Events.on(engine, "collisionStart", function (event) {
         },
         restitution: 0.3,
       });
-      Body.setMass(newBody, newFruit.radius * newFruit.radius);
+      Body.setMass(newBody, newFruit.radius * 2);
       World.add(world, newBody);
       Body.scale(newBody, 3 / 2, 3 / 2);
       setTimeout(function () {
