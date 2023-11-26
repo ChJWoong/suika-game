@@ -143,6 +143,8 @@ function addFruit() {
       sprite: { texture: `${fruit.name}.png`, xScale: 1, yScale: 1 },
     },
     restitution: 0.3,
+    friction: 10,
+    angle: -1,
   });
 
   currentBody = body;
@@ -272,6 +274,7 @@ Events.on(engine, "collisionStart", function (event) {
           sprite: { texture: `${newFruit.name}.png`, xScale: 1, yScale: 1 },
         },
         restitution: 0.3,
+        friction: 10,
       });
       Body.setMass(newBody, newFruit.radius * 2);
       World.add(world, newBody);
