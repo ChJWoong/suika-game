@@ -13,7 +13,11 @@ var Engine = Matter.Engine,
   Events = Matter.Events;
 
 // create an engine
-var engine = Engine.create();
+var engine = Engine.create({
+  timing: {
+    timeScale: 1,
+  },
+});
 
 // create a renderer
 var render = Render.create({
@@ -25,6 +29,11 @@ var render = Render.create({
     width: 480,
     height: 720,
   },
+});
+
+// create runner
+var runner = Runner.create({
+  isFixed: true,
 });
 
 const world = engine.world;
@@ -52,16 +61,6 @@ const topLine = Bodies.rectangle(310, 150, 620, 2, {
 });
 
 World.add(world, [leftWall, rightWall, ground, topLine]);
-// run the renderer
-Render.run(render);
-
-// create runner
-var runner = Runner.create();
-
-//resize();
-
-// run the engine
-Runner.run(runner, engine);
 
 let currentBody = null;
 let currentFruit = null;
@@ -246,7 +245,7 @@ window.ontouchend = function (event) {
 };
 
 Events.on(engine, "collisionStart", function (event) {
-  document.getElementById("asd").innerHTML = `점수 : ${score}`;
+  // document.getElementById("asd").innerHTML = `점수 : ${score}`;
   if (isCollisionInProgress) {
     return;
   }
@@ -317,7 +316,71 @@ function isMobile() {
   return window.innerHeight / window.innerWidth >= 1.49;
 }
 
-resize();
-window.addEventListener("resize", resize);
+const times = [];
 
-addFruit();
+//프레임 계산
+function refreshLoop() {
+  window.requestAnimationFrame(() => {
+    const now = performance.now();
+    while (times.length > 0 && times[0] <= now - 1000) {
+      times.shift();
+    }
+    times.push(now);
+    fps = times.length;
+    engine.timing.timeScale = 100 / fps;
+    document.getElementById("asd").innerHTML = `점수 : ${score} `;
+
+    refreshLoop();
+  });
+}
+
+const imagePaths = [];
+
+function preloadImages(imagePaths, callback) {
+  let loadedImages = 0;
+
+  function loadImage(path) {
+    const img = new Image();
+
+    img.onload = img.onerror = function () {
+      loadedImages++;
+
+      if (loadedImages === imagePaths.length) {
+        // 모든 이미지가 로드되면 콜백 함수 호출
+        if (typeof callback === "function") {
+          callback();
+        }
+      }
+    };
+
+    img.src = path;
+  }
+
+  for (const path of imagePaths) {
+    loadImage(path);
+  }
+}
+
+function main() {
+  for (let Fruit of FRUITS) {
+    imagePaths.push(`${Fruit.name}.png`);
+  }
+
+  preloadImages(imagePaths, function () {
+    console.log("모든 이미지가 성공적으로 로드되었습니다.");
+    // 이곳에서 로드된 이미지들을 사용할 수 있습니다.
+  });
+
+  // run the renderer
+  Render.run(render);
+
+  // run the engine
+  Runner.run(runner, engine);
+
+  resize();
+  refreshLoop();
+  window.addEventListener("resize", resize);
+  addFruit();
+}
+
+main();
