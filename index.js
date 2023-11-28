@@ -317,21 +317,35 @@ function isMobile() {
 }
 
 const times = [];
+let targetFPS = 60;
 
-//프레임 계산
+//프레임 루프
 function refreshLoop() {
   window.requestAnimationFrame(() => {
+    //프레임 계산
     const now = performance.now();
     while (times.length > 0 && times[0] <= now - 1000) {
       times.shift();
     }
     times.push(now);
     fps = times.length;
-    engine.timing.timeScale = 100 / fps;
+    if (fps > 50) {
+      engine.timing.timeScale = 100 / fps;
+    } else {
+      engine.timing.timeScale = 1;
+    }
     document.getElementById("asd").innerHTML = `점수 : ${score} `;
+
+    //step
 
     refreshLoop();
   });
+}
+
+function loop() {
+  setTimeout(function () {
+    loop();
+  }, 1000);
 }
 
 const imagePaths = [];
@@ -368,7 +382,6 @@ function main() {
 
   preloadImages(imagePaths, function () {
     console.log("모든 이미지가 성공적으로 로드되었습니다.");
-    // 이곳에서 로드된 이미지들을 사용할 수 있습니다.
   });
 
   // run the renderer
@@ -381,6 +394,7 @@ function main() {
   refreshLoop();
   window.addEventListener("resize", resize);
   addFruit();
+  loop();
 }
 
 main();
