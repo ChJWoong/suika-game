@@ -380,7 +380,7 @@ function handleVisibilityChange() {
   if (document.visibilityState === "visible") {
     // 화면이 활성화 상태로 변경될 때 수행할 로직
 
-    console.log("화면이 활성화되었습니다. v(다시 로드 없음)");
+    console.log("화면이 활성화되었습니다. ");
 
     // preloadImages(imagePaths);
   } else {
@@ -403,8 +403,8 @@ function main() {
   resize();
   refreshLoop();
   window.addEventListener("resize", resize);
-  //화면 활성화 비활성화 감지
-  // document.addEventListener("visibilitychange", handleVisibilityChange);
+  //화면 활성화 비활성화 감지 & 이미지 다시 로드
+  document.addEventListener("visibilitychange", handleVisibilityChange);
 
   addFruit();
   loop();
