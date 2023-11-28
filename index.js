@@ -380,9 +380,9 @@ function handleVisibilityChange() {
   if (document.visibilityState === "visible") {
     // 화면이 활성화 상태로 변경될 때 수행할 로직
 
-    console.log("화면이 활성화되었습니다.");
+    console.log("화면이 활성화되었습니다. v(다시 로드 없음)");
 
-    preloadImages(imagePaths);
+    // preloadImages(imagePaths);
   } else {
     // 화면이 비활성화 상태로 변경될 때 수행할 로직
     console.log("화면이 비활성화되었습니다.");
