@@ -380,9 +380,9 @@ function main() {
     imagePaths.push(`${Fruit.name}.png`);
   }
 
-  preloadImages(imagePaths, function () {
-    console.log("모든 이미지가 성공적으로 로드되었습니다.");
-  });
+  // preloadImages(imagePaths, function () {
+  //   console.log("모든 이미지가 성공적으로 로드되었습니다.");
+  // });
 
   // run the renderer
   Render.run(render);
