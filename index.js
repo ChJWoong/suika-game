@@ -49,18 +49,19 @@ const rightWall = Bodies.rectangle(480, 395, 30, 790, {
 });
 
 const ground = Bodies.rectangle(310, 720, 620, 60, {
+  name: "ground",
   isStatic: true,
   render: { fillStyle: "#E6B143" },
 });
 
-const topLine = Bodies.rectangle(310, 150, 620, 2, {
+const topLine = Bodies.rectangle(310, 120, 620, 2, {
   name: "Top Line",
   isStatic: true,
   isSensor: true,
   render: { fillStyle: "#E6B143" },
 });
 
-World.add(world, [leftWall, rightWall, ground, topLine]);
+Composite.add(world, [leftWall, rightWall, ground, topLine]);
 
 let currentBody = null;
 let currentFruit = null;
@@ -130,10 +131,15 @@ const FRUITS = [
 ];
 
 function addFruit() {
+  if (currentBody != null) {
+    return;
+  }
+
   let index = Math.floor(Math.random() * 5);
   const fruit = FRUITS[index];
 
   const body = Bodies.circle(240, 50, fruit.radius, {
+    name: "fruit",
     index: index,
     isSleeping: true,
     //  texture: `${fruit.name}.png`,
@@ -149,11 +155,11 @@ function addFruit() {
   currentBody = body;
   currentFruit = fruit;
   Body.setMass(body, fruit.radius * 2);
-  World.add(world, body);
+  Composite.add(world, body);
 }
 
 window.onkeydown = function (event) {
-  if (!disable) {
+  if (!disable && currentBody != null) {
     switch (event.code) {
       case "KeyA":
         if (interval) {
@@ -187,8 +193,8 @@ window.onkeydown = function (event) {
         interval = null;
         setTimeout(function () {
           addFruit();
-          disable = false;
-        }, 500);
+        }, 1000);
+
         break;
     }
   }
@@ -239,8 +245,7 @@ window.ontouchend = function (event) {
     currentBody.isSleeping = false;
     setTimeout(function () {
       addFruit();
-      disable = false;
-    }, 500);
+    }, 1000);
   }
 };
 
@@ -266,6 +271,7 @@ Events.on(engine, "collisionStart", function (event) {
       const newFruit = FRUITS[index + 1];
 
       const newBody = Bodies.circle(collision.collision.supports[0].x, collision.collision.supports[0].y, newFruit.radius * 1, {
+        name: "fruit",
         index: index + 1,
         isSleeping: false,
         render: {
@@ -276,7 +282,7 @@ Events.on(engine, "collisionStart", function (event) {
         friction: 10,
       });
       Body.setMass(newBody, newFruit.radius * 2);
-      World.add(world, newBody);
+      Composite.add(world, newBody);
       Body.scale(newBody, 3 / 2, 3 / 2);
       setTimeout(function () {
         Body.scale(newBody, 2 / 3, 2 / 3);
@@ -285,14 +291,28 @@ Events.on(engine, "collisionStart", function (event) {
 
       if (newBody.index == 10) {
         numSuika += 1;
+        engine.timing.timeScale = 0;
         alert("수박 완성!");
         newBody = null;
       }
     }
 
     if (!disable && (collision.bodyA.name === "Top Line" || collision.bodyB.name === "Top Line")) {
+      engine.timing.timeScale = 0;
       alert("실패!");
       location.reload(true);
+    }
+
+    //떨어트린 과일이 땅 or 과일과 만났을때 disable 해제
+    if (
+      currentBody != null &&
+      ((collision.bodyA.id == currentBody.id && collision.bodyB.name == "ground") ||
+        (collision.bodyA.name == "ground" && collision.bodyB.id == currentBody.id) ||
+        (collision.bodyA.name == "fruit" && collision.bodyB.id == currentBody.id) ||
+        (collision.bodyA.id == currentBody.id && collision.bodyB.name == "fruit"))
+    ) {
+      currentBody = null;
+      disable = false;
     }
   });
 });
@@ -314,6 +334,19 @@ function resize() {
 
 function isMobile() {
   return window.innerHeight / window.innerWidth >= 1.49;
+}
+
+function getAllObjectPositions() {
+  const allBodies = Composite.allBodies(world);
+
+  const positions = allBodies.map((body) => {
+    return {
+      name: body.name,
+      position: { x: body.position.x, y: body.position.y },
+    };
+  });
+
+  return positions;
 }
 
 const times = [];
@@ -344,6 +377,7 @@ function refreshLoop() {
 
 function loop() {
   setTimeout(function () {
+    // console.log(getAllObjectPositions());
     loop();
   }, 1000);
 }
