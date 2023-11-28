@@ -373,17 +373,27 @@ function preloadImages(imagePaths, callback) {
   for (const path of imagePaths) {
     loadImage(path);
   }
+  console.log("모든 이미지가 성공적으로 로드되었습니다.");
+}
+
+function handleVisibilityChange() {
+  if (document.visibilityState === "visible") {
+    // 화면이 활성화 상태로 변경될 때 수행할 로직
+
+    console.log("화면이 활성화되었습니다.");
+
+    preloadImages(imagePaths);
+  } else {
+    // 화면이 비활성화 상태로 변경될 때 수행할 로직
+    console.log("화면이 비활성화되었습니다.");
+  }
 }
 
 function main() {
   for (let Fruit of FRUITS) {
     imagePaths.push(`${Fruit.name}.png`);
   }
-
-  // preloadImages(imagePaths, function () {
-  //   console.log("모든 이미지가 성공적으로 로드되었습니다.");
-  // });
-
+  preloadImages(imagePaths);
   // run the renderer
   Render.run(render);
 
@@ -393,6 +403,9 @@ function main() {
   resize();
   refreshLoop();
   window.addEventListener("resize", resize);
+  //화면 활성화 비활성화 감지
+  document.addEventListener("visibilitychange", handleVisibilityChange);
+
   addFruit();
   loop();
 }
