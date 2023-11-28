@@ -210,7 +210,7 @@ window.onkeyup = function (event) {
 };
 
 window.ontouchstart = function (event) {
-  if (!disable && !isTouching) {
+  if (!disable && !isTouching && currentBody != null) {
     let touch = event.touches[0];
     let touchX = touch.clientX / parent.style.zoom;
     isTouching = true;
@@ -224,7 +224,7 @@ window.ontouchstart = function (event) {
 };
 
 window.ontouchmove = function (event) {
-  if (!disable) {
+  if (!disable && currentBody != null) {
     let touch = event.touches[0];
 
     let touchX = touch.clientX / parent.style.zoom;
@@ -240,7 +240,7 @@ window.ontouchmove = function (event) {
 };
 
 window.ontouchend = function (event) {
-  if (!disable && isTouching) {
+  if (!disable && isTouching && currentBody != null) {
     disable = true;
     currentBody.isSleeping = false;
     setTimeout(function () {
