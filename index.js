@@ -404,7 +404,7 @@ function main() {
   refreshLoop();
   window.addEventListener("resize", resize);
   //화면 활성화 비활성화 감지
-  document.addEventListener("visibilitychange", handleVisibilityChange);
+  // document.addEventListener("visibilitychange", handleVisibilityChange);
 
   addFruit();
   loop();
