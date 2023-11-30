@@ -72,6 +72,9 @@ let isTouching = false;
 let isCollisionInProgress = false;
 let score = 0;
 
+let start_time;
+let end_time;
+
 const FRUITS = [
   {
     name: "images/00_cherry",
@@ -159,7 +162,7 @@ function addFruit() {
 }
 
 window.onkeydown = function (event) {
-  if (!disable && currentBody != null) {
+  if (!disable && currentBody != null && fps >= 60) {
     switch (event.code) {
       case "KeyA":
         if (interval) {
@@ -191,10 +194,7 @@ window.onkeydown = function (event) {
         currentBody.isSleeping = false;
         clearInterval(interval);
         interval = null;
-        setTimeout(function () {
-          addFruit();
-        }, 1000);
-
+        start_time = new Date().getTime();
         break;
     }
   }
@@ -240,12 +240,10 @@ window.ontouchmove = function (event) {
 };
 
 window.ontouchend = function (event) {
-  if (!disable && isTouching && currentBody != null) {
+  if (!disable && isTouching && currentBody != null && fps >= 60) {
     disable = true;
     currentBody.isSleeping = false;
-    setTimeout(function () {
-      addFruit();
-    }, 1000);
+    start_time = new Date().getTime();
   }
 };
 
@@ -311,8 +309,17 @@ Events.on(engine, "collisionStart", function (event) {
         (collision.bodyA.name == "fruit" && collision.bodyB.id == currentBody.id) ||
         (collision.bodyA.id == currentBody.id && collision.bodyB.name == "fruit"))
     ) {
+      end_time = new Date().getTime();
       currentBody = null;
       disable = false;
+
+      if (end_time - start_time < 1000) {
+        setInterval(function () {
+          addFruit();
+        }, 1000);
+      } else {
+        addFruit();
+      }
     }
   });
 });
@@ -350,7 +357,7 @@ function getAllObjectPositions() {
 }
 
 const times = [];
-let targetFPS = 60;
+let tempFPS = 0;
 
 //프레임 루프
 function refreshLoop() {
@@ -361,12 +368,12 @@ function refreshLoop() {
       times.shift();
     }
     times.push(now);
-    fps = times.length;
-    if (fps > 50) {
-      engine.timing.timeScale = 100 / fps;
-    } else {
-      engine.timing.timeScale = 1;
+    if (tempFPS < times.length) {
+      fps = times.length;
+      tempFPS = times.length;
     }
+
+    engine.timing.timeScale = 100 / (tempFPS - 1);
     document.getElementById("asd").innerHTML = `점수 : ${score} `;
 
     //step
