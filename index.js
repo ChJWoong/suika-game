@@ -1,6 +1,8 @@
 // Example: Creating a game container dynamically
 const game = document.getElementById("game");
 const parent = document.getElementById("game-container");
+const explosionCanvas = document.getElementById("explosionCanvas");
+const explosionCtx = explosionCanvas.getContext("2d");
 
 // module aliases
 var Engine = Matter.Engine,
@@ -137,6 +139,7 @@ function addFruit() {
   if (currentBody != null) {
     return;
   }
+  const randomAngle = Math.random() * 2 * Math.PI;
 
   let index = Math.floor(Math.random() * 5);
   const fruit = FRUITS[index];
@@ -150,14 +153,15 @@ function addFruit() {
       //fillStyle: fruit.color,
       sprite: { texture: `${fruit.name}.png`, xScale: 1, yScale: 1 },
     },
-    restitution: 0.3,
-    friction: 10,
-    angle: -1,
+    restitution: 0.2,
+    friction: 2,
+    frictionAir: 0.01,
+    angle: randomAngle,
   });
 
   currentBody = body;
   currentFruit = fruit;
-  Body.setMass(body, fruit.radius * 2);
+  Body.setMass(body, fruit.radius);
   Composite.add(world, body);
 }
 
@@ -247,6 +251,125 @@ window.ontouchend = function (event) {
   }
 };
 
+let collisionQueue = [];
+
+//충돌 큐의 데이터들이 유효한지 검사
+function filterCollisionQueue() {
+  collisionQueue = collisionQueue.filter((collision) => {
+    const bodyAExists = Composite.get(world, collision.bodyA.id, "body") !== null;
+    const bodyBExists = Composite.get(world, collision.bodyB.id, "body") !== null;
+    return bodyAExists && bodyBExists;
+  });
+}
+
+//충돌 큐 처리
+function processCollisions() {
+  if (collisionQueue.length === 0) {
+    return;
+  }
+
+  const collision = collisionQueue.shift();
+
+  const bodyA = collision.bodyA;
+  const bodyB = collision.bodyB;
+  const index = bodyA.index;
+  const randomAngle = Math.random() * 2 * Math.PI;
+
+  if (index === FRUITS.length - 1) {
+    return;
+  }
+
+  drawExplosion(collision.collision.supports[0].x, collision.collision.supports[0].y);
+
+  World.remove(world, [bodyA, bodyB]);
+  score += (index + 1) * 2;
+
+  const newFruit = FRUITS[index + 1];
+  const newBody = Bodies.circle(collision.collision.supports[0].x, collision.collision.supports[0].y, newFruit.radius * 1, {
+    name: "fruit",
+    index: index + 1,
+    isSleeping: false,
+    render: {
+      fillStyle: newFruit.color,
+      sprite: { texture: `${newFruit.name}.png`, xScale: 1, yScale: 1 },
+    },
+    restitution: 0.2,
+    friction: 2,
+    frictionAir: 0.01,
+    angle: randomAngle,
+  });
+
+  Body.setMass(newBody, newFruit.radius);
+  Composite.add(world, newBody);
+  Body.scale(newBody, 4 / 2, 4 / 2);
+
+  setTimeout(function () {
+    Body.scale(newBody, 2 / 4, 2 / 4);
+    isCollisionInProgress = false;
+
+    // 충돌 큐를 필터링하여 유효하지 않은 충돌 제거
+    filterCollisionQueue();
+
+    // 다음 충돌을 처리
+    processCollisions();
+  }, 5);
+
+  if (newBody.index === 10) {
+    numSuika += 1;
+    engine.timing.timeScale = 0;
+    alert("수박 완성!");
+    newBody = null;
+  }
+}
+
+function drawExplosion(x, y) {
+  const particles = [];
+  const numParticles = 20;
+  const colors = ["#FF6B6B", "#FF8C42", "#FFEA00", "#00D084", "#00A8FF"];
+
+  for (let i = 0; i < numParticles; i++) {
+    particles.push({
+      x: x,
+      y: y,
+      radius: Math.random() * 5 + 5,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      angle: Math.random() * 2 * Math.PI,
+      speed: Math.random() * 5 + 2,
+      alpha: 1,
+    });
+  }
+
+  function animate() {
+    explosionCtx.clearRect(0, 0, explosionCanvas.width, explosionCanvas.height);
+
+    particles.forEach((p, i) => {
+      p.x += Math.cos(p.angle) * p.speed;
+      p.y += Math.sin(p.angle) * p.speed;
+      p.alpha -= 0.02;
+      if (p.alpha <= 0) particles.splice(i, 1);
+
+      explosionCtx.fillStyle = `rgba(${hexToRgb(p.color)}, ${p.alpha})`;
+      explosionCtx.beginPath();
+      explosionCtx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+      explosionCtx.fill();
+    });
+
+    if (particles.length > 0) {
+      requestAnimationFrame(animate);
+    }
+  }
+
+  animate();
+}
+
+function hexToRgb(hex) {
+  const bigint = parseInt(hex.replace("#", ""), 16);
+  const r = (bigint >> 16) & 255;
+  const g = (bigint >> 8) & 255;
+  const b = bigint & 255;
+  return `${r}, ${g}, ${b}`;
+}
+
 Events.on(engine, "collisionStart", function (event) {
   // document.getElementById("asd").innerHTML = `점수 : ${score}`;
   if (isCollisionInProgress) {
@@ -255,55 +378,30 @@ Events.on(engine, "collisionStart", function (event) {
 
   event.pairs.forEach(function (collision) {
     if (collision.bodyA.index === collision.bodyB.index) {
-      isCollisionInProgress = true;
+      collisionQueue.push(collision);
 
-      const index = collision.bodyA.index;
-
-      if (index === FRUITS.length - 1) {
-        return;
-      }
-
-      World.remove(world, [collision.bodyA, collision.bodyB]);
-      score += (index + 1) * 2;
-
-      const newFruit = FRUITS[index + 1];
-
-      const newBody = Bodies.circle(collision.collision.supports[0].x, collision.collision.supports[0].y, newFruit.radius * 1, {
-        name: "fruit",
-        index: index + 1,
-        isSleeping: false,
-        render: {
-          fillStyle: newFruit.color,
-          sprite: { texture: `${newFruit.name}.png`, xScale: 1, yScale: 1 },
-        },
-        restitution: 0.3,
-        friction: 10,
-      });
-      Body.setMass(newBody, newFruit.radius * 2);
-      Composite.add(world, newBody);
-      Body.scale(newBody, 3 / 2, 3 / 2);
-      setTimeout(function () {
-        Body.scale(newBody, 2 / 3, 2 / 3);
-        isCollisionInProgress = false;
-      }, 1);
-
-      if (newBody.index == 10) {
-        numSuika += 1;
-        engine.timing.timeScale = 0;
-        alert("수박 완성!");
-        newBody = null;
+      if (!isCollisionInProgress) {
+        isCollisionInProgress = true;
+        processCollisions();
       }
     }
 
+    // Top Line에 닿은 경우 처리
     if (!disable && (collision.bodyA.name === "Top Line" || collision.bodyB.name === "Top Line")) {
-      engine.timing.timeScale = 0;
-      alert("실패!");
-      location.reload(true);
+      const body = collision.bodyA.name === "Top Line" ? collision.bodyB : collision.bodyA;
+
+      // 과일이 정지 상태일 때만 실패 메시지 표시
+      if (body.speed < 0.01) {
+        engine.timing.timeScale = 0;
+        alert("실패!");
+        location.reload(true);
+      }
     }
 
     //떨어트린 과일이 땅 or 과일과 만났을때 disable 해제
     if (
       currentBody != null &&
+      currentBody.isSleeping == false &&
       ((collision.bodyA.id == currentBody.id && collision.bodyB.name == "ground") ||
         (collision.bodyA.name == "ground" && collision.bodyB.id == currentBody.id) ||
         (collision.bodyA.name == "fruit" && collision.bodyB.id == currentBody.id) ||
@@ -423,7 +521,7 @@ function handleVisibilityChange() {
 
     console.log("화면이 활성화되었습니다. ");
 
-    // preloadImages(imagePaths);
+    preloadImages(imagePaths);
   } else {
     // 화면이 비활성화 상태로 변경될 때 수행할 로직
     console.log("화면이 비활성화되었습니다.");
@@ -448,7 +546,7 @@ function main() {
   document.addEventListener("visibilitychange", handleVisibilityChange);
 
   addFruit();
-  loop();
+  // loop();
 }
 
 main();
