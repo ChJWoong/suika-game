@@ -275,6 +275,7 @@ window.ontouchstart = function (event) {
 };
 
 window.ontouchmove = function (event) {
+  event.preventDefault();
   if (!disable && currentBody != null) {
     let touch = event.touches[0];
 
@@ -382,7 +383,7 @@ function drawExplosion(x, y) {
     particles.push({
       x: x,
       y: y,
-      radius: Math.random() * 5 + 5,
+      radius: Math.random() * 5 + 8,
       color: colors[Math.floor(Math.random() * colors.length)],
       angle: Math.random() * 2 * Math.PI,
       speed: Math.random() * 5 + 2,
