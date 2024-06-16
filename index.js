@@ -19,7 +19,7 @@ function playEffectSound() {
   const newEffectAudio = effectAudio.cloneNode();
   newEffectAudio.currentTime = 0.35;
   if (isMobile()) {
-    newEffectAudio.currentTime = 0.5;
+    newEffectAudio.currentTime = 0.4;
   }
   newEffectAudio.play().catch((error) => {
     console.error("Failed to play effect audio:", error);
