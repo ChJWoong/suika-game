@@ -347,6 +347,8 @@ function processCollisions() {
   }
 }
 
+let explosions = [];
+
 function drawExplosion(x, y) {
   const particles = [];
   const numParticles = 20;
@@ -364,27 +366,44 @@ function drawExplosion(x, y) {
     });
   }
 
-  function animate() {
+  const explosion = {
+    particles: particles,
+    animationFrameId: null,
+  };
+
+  explosions.push(explosion);
+
+  function animateExplosion(explosion) {
     explosionCtx.clearRect(0, 0, explosionCanvas.width, explosionCanvas.height);
 
-    particles.forEach((p, i) => {
-      p.x += Math.cos(p.angle) * p.speed;
-      p.y += Math.sin(p.angle) * p.speed;
-      p.alpha -= 0.02;
-      if (p.alpha <= 0) particles.splice(i, 1);
+    explosions.forEach((explosion, explosionIndex) => {
+      explosion.particles.forEach((p, i) => {
+        p.x += Math.cos(p.angle) * p.speed;
+        p.y += Math.sin(p.angle) * p.speed;
+        p.alpha -= 0.02;
+        if (p.alpha <= 0) explosion.particles.splice(i, 1);
 
-      explosionCtx.fillStyle = `rgba(${hexToRgb(p.color)}, ${p.alpha})`;
-      explosionCtx.beginPath();
-      explosionCtx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-      explosionCtx.fill();
+        explosionCtx.fillStyle = `rgba(${hexToRgb(p.color)}, ${p.alpha})`;
+        explosionCtx.beginPath();
+        explosionCtx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        explosionCtx.fill();
+      });
+
+      if (explosion.particles.length === 0) {
+        explosions.splice(explosionIndex, 1);
+      }
     });
 
-    if (particles.length > 0) {
-      requestAnimationFrame(animate);
+    if (explosions.length > 0) {
+      requestAnimationFrame(animateExplosion);
     }
   }
 
-  animate();
+  if (explosions.length === 1) {
+    animateExplosion();
+  }
+
+  animateExplosion(explosion);
 }
 
 function hexToRgb(hex) {
