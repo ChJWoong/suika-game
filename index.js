@@ -26,9 +26,30 @@ function playEffectSound() {
   });
 }
 
-// Event listener for user interaction
-document.addEventListener("click", startBackgroundMusic, { once: true });
-document.addEventListener("keydown", startBackgroundMusic, { once: true });
+// 사용자 제스처 후에 오디오 재생 허용
+function initializeAudio() {
+  if (effectAudio) {
+    effectAudio
+      .play()
+      .then(() => {
+        effectAudio.pause();
+        effectAudio.currentTime = 0;
+      })
+      .catch((error) => {
+        console.error("Failed to initialize effect audio:", error);
+      });
+  } else {
+    console.error("Failed to load effectaudio.");
+  }
+}
+
+// 페이지 로드 시 이벤트 리스너 추가
+window.addEventListener("load", () => {
+  document.addEventListener("click", initializeAudio, { once: true });
+  document.addEventListener("keydown", initializeAudio, { once: true });
+  document.addEventListener("click", startBackgroundMusic, { once: true });
+  document.addEventListener("keydown", startBackgroundMusic, { once: true });
+});
 
 // module aliases
 var Engine = Matter.Engine,
