@@ -6,6 +6,7 @@ const explosionCtx = explosionCanvas.getContext("2d");
 
 // 오디오파일
 const backgroundAudio = document.getElementById("background-audio");
+const effectAudio = document.getElementById("effect-audio");
 
 // Function to start background music
 function startBackgroundMusic() {
@@ -15,9 +16,9 @@ function startBackgroundMusic() {
 }
 
 function playEffectSound() {
-  const effectAudio = new Audio("bubblepop.mp3");
-  effectAudio.currentTime = 0.35;
-  effectAudio.play().catch((error) => {
+  const newEffectAudio = effectAudio.cloneNode();
+  newEffectAudio.currentTime = 0.35;
+  newEffectAudio.play().catch((error) => {
     console.error("Failed to play effect audio:", error);
   });
 }
