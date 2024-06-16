@@ -4,6 +4,28 @@ const parent = document.getElementById("game-container");
 const explosionCanvas = document.getElementById("explosionCanvas");
 const explosionCtx = explosionCanvas.getContext("2d");
 
+// 오디오파일
+const backgroundAudio = document.getElementById("background-audio");
+
+// Function to start background music
+function startBackgroundMusic() {
+  backgroundAudio.play().catch((error) => {
+    console.error("Failed to play background audio:", error);
+  });
+}
+
+function playEffectSound() {
+  const effectAudio = new Audio("bubblepop.mp3");
+  effectAudio.currentTime = 0.35;
+  effectAudio.play().catch((error) => {
+    console.error("Failed to play effect audio:", error);
+  });
+}
+
+// Event listener for user interaction
+document.addEventListener("click", startBackgroundMusic, { once: true });
+document.addEventListener("keydown", startBackgroundMusic, { once: true });
+
 // module aliases
 var Engine = Matter.Engine,
   Render = Matter.Render,
@@ -278,6 +300,8 @@ function processCollisions() {
   if (index === FRUITS.length - 1) {
     return;
   }
+  //효과음 재생
+  playEffectSound();
 
   drawExplosion(collision.collision.supports[0].x, collision.collision.supports[0].y);
 
@@ -301,10 +325,10 @@ function processCollisions() {
 
   Body.setMass(newBody, newFruit.radius);
   Composite.add(world, newBody);
-  Body.scale(newBody, 4 / 2, 4 / 2);
+  Body.scale(newBody, 3 / 2, 3 / 2);
 
   setTimeout(function () {
-    Body.scale(newBody, 2 / 4, 2 / 4);
+    Body.scale(newBody, 2 / 3, 2 / 3);
     isCollisionInProgress = false;
 
     // 충돌 큐를 필터링하여 유효하지 않은 충돌 제거
