@@ -17,9 +17,9 @@ function startBackgroundMusic() {
 
 function playEffectSound() {
   const newEffectAudio = effectAudio.cloneNode();
-  newEffectAudio.currentTime = 0.35;
+  newEffectAudio.currentTime = 0.3;
   if (isMobile()) {
-    newEffectAudio.currentTime = 0.4;
+    newEffectAudio.currentTime = 0.3;
   }
   newEffectAudio.play().catch((error) => {
     console.error("Failed to play effect audio:", error);
