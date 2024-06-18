@@ -50,7 +50,7 @@ function playEffectSound() {
   // }
 
   audioPool[0].pause();
-  audioPool[0].currentTime = 0;
+  audioPool[0].currentTime = 0.45;
   audioPool[0].play();
 }
 
