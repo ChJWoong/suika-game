@@ -7,7 +7,14 @@ const explosionCtx = explosionCanvas.getContext("2d");
 // 오디오파일
 const backgroundAudio = document.getElementById("background-audio");
 const effectAudio = document.getElementById("effect-audio");
+const maxAudioInstances = 10; // 최대 오디오 인스턴스 수
+let audioPool = [];
 
+// 오디오 요소를 미리 클론하여 준비해 두기
+for (let i = 0; i < maxAudioInstances; i++) {
+  const newEffectAudio = effectAudio.cloneNode();
+  audioPool.push(newEffectAudio);
+}
 // Function to start background music
 function startBackgroundMusic() {
   backgroundAudio.play().catch((error) => {
@@ -16,22 +23,21 @@ function startBackgroundMusic() {
 }
 
 function playEffectSound() {
-  const newEffectAudio = effectAudio.cloneNode();
-  newEffectAudio.currentTime = 0.3;
-  if (isMobile()) {
-    newEffectAudio.currentTime = 0.3;
+  // 재사용 가능한 오디오 요소를 찾기
+  const availableAudio = audioPool.find((audio) => audio.paused || audio.ended);
+  if (availableAudio) {
+    availableAudio.currentTime = 0.3;
+    console.log(audioPool);
+    availableAudio.play().catch((error) => {
+      console.error("Failed to play effect audio:", error);
+    });
+  } else {
+    console.warn("No available audio instances to play effect sound.");
   }
-  newEffectAudio.play().catch((error) => {
-    console.error("Failed to play effect audio:", error);
-  });
 }
 
 // 사용자 제스처 후에 오디오 컨텍스트 초기화 및 오디오 미리 재생
 function initializeAudio() {
-  if (!audioContext) {
-    audioContext = new AudioContext();
-  }
-
   if (effectAudio) {
     effectAudio
       .play()
@@ -590,11 +596,19 @@ function handleVisibilityChange() {
   if (document.visibilityState === "visible") {
     // 화면이 활성화 상태로 변경될 때 수행할 로직
 
+    //배경음 재생
+    backgroundAudio.play().catch((error) => {
+      console.error("Failed to play background audio:", error);
+    });
     console.log("화면이 활성화되었습니다. ");
 
     preloadImages(imagePaths);
   } else {
     // 화면이 비활성화 상태로 변경될 때 수행할 로직
+
+    //배경음 중지
+    backgroundAudio.pause();
+
     console.log("화면이 비활성화되었습니다.");
   }
 }
