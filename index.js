@@ -44,6 +44,10 @@ function playEffectSound() {
   };
   audioPool[0].onplay = function () {
     alert("The audio has started");
+    setTimeout(() => {
+      audioPool[0].pause();
+      audioPool[0].currentTime = 0.45;
+    }, 1000);
   };
 }
 
