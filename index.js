@@ -49,6 +49,8 @@ function playEffectSound() {
   //   console.warn("No available audio instances to play effect sound.");
   // }
 
+  audioPool[0].pause();
+  audioPool[0].currentTime = 0.3;
   audioPool[0].play();
 }
 
