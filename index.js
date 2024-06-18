@@ -1,21 +1,22 @@
-// Example: Creating a game container dynamically
 const game = document.getElementById("game");
 const parent = document.getElementById("game-container");
-const explosionCanvas = document.getElementById("explosionCanvas");
-const explosionCtx = explosionCanvas.getContext("2d");
-const startScreen = document.getElementById("start-screen");
-// 오디오파일
-const backgroundAudio = document.getElementById("background-audio");
-const effectAudio = document.getElementById("effect-audio");
+const explosionCanvas = document.getElementById("explosionCanvas"); //화면효과용
+const explosionCtx = explosionCanvas.getContext("2d"); //화면효과용
+const startScreen = document.getElementById("start-screen"); //시작화면
+const backgroundAudio = document.getElementById("background-audio"); //배경음
+const effectAudio = document.getElementById("effect-audio"); //효과음
+const muteButton = document.getElementById("mute-button"); //음소거 버튼
+const keyexpl = document.getElementById("key"); //키설명
 const maxAudioInstances = 10; // 최대 오디오 인스턴스 수
-const muteButton = document.getElementById("mute-button");
-let audioPool = [];
-let isMuted = false;
+let audioPool = []; //오디오 클론 배열
+let isMuted = false; //음소거 여부
 
 // 오디오 요소를 미리 클론하여 준비해 두기
 function setAudioClone() {
   for (let i = 0; i < maxAudioInstances; i++) {
     const newEffectAudio = effectAudio.cloneNode();
+
+    //클론 후 초기재생 하여 미리 로드
     newEffectAudio.play().then(() => {
       newEffectAudio.pause();
     });
@@ -23,15 +24,16 @@ function setAudioClone() {
   }
 }
 
-// Function to start background music
+//배경음악 재생
 function startBackgroundMusic() {
   backgroundAudio.play().catch((error) => {
     console.error("Failed to play background audio:", error);
   });
 }
 
+//효과음 재생
 function playEffectSound() {
-  // // 재사용 가능한 오디오 요소를 찾기
+  //클론 배열에서 재사용 가능한 클론 찾아서 재생
   const availableAudio = audioPool.find((audio) => audio.paused || audio.ended);
   if (availableAudio) {
     availableAudio.currentTime = 0.4;
@@ -43,22 +45,7 @@ function playEffectSound() {
   }
 }
 
-// 사용자 제스처 후에 오디오 컨텍스트 초기화 및 오디오 미리 재생
-function initializeAudio() {
-  if (effectAudio) {
-    effectAudio
-      .play()
-      .then(() => {
-        effectAudio.pause();
-        effectAudio.currentTime = 0;
-      })
-      .catch((error) => {
-        console.error("Failed to initialize effect audio:", error);
-      });
-  }
-}
-
-// 음소거 버튼 클릭 시 음소거/음소거 해제
+// 음소거 버튼 클릭 시 음소거 스위칭
 muteButton.addEventListener("click", () => {
   isMuted = !isMuted;
   muteButton.innerHTML = isMuted ? '<i class="fas fa-volume-mute"></i>' : '<i class="fas fa-volume-up"></i>';
@@ -68,36 +55,29 @@ muteButton.addEventListener("click", () => {
     startBackgroundMusic();
   }
 });
-// 페이지 로드 시 이벤트 리스너 추가
-window.addEventListener("load", () => {
-  if (isMobile()) {
-    startScreen.textContent = "터치 시 게임 시작";
-  } else {
-    startScreen.textContent = "아무 키 입력 시 시작";
-  }
 
-  document.addEventListener("click", handleUserGesture, { once: true });
+// 페이지 로드 시 제스쳐핸들러 함수 호출
+window.addEventListener("load", () => {
+  //오디오를 재생하기 위해 제스쳐를 입력받아야함
+  document.addEventListener("touchstart", handleUserGesture, { once: true });
   document.addEventListener("keydown", handleUserGesture, { once: true });
 });
 
-// 이벤트 리스너를 통해 게임 시작
+//제스쳐 입력 받은 후 이벤트 리스너 제거 & 게임 시작
 function handleUserGesture() {
   startGame();
-  document.removeEventListener("click", handleUserGesture);
+  document.removeEventListener("touchstart", handleUserGesture);
   document.removeEventListener("keydown", handleUserGesture);
 }
 
+//게임 시작
 function startGame() {
-  initializeAudio();
   startBackgroundMusic();
   setAudioClone();
   startScreen.style.display = "none"; // 시작 화면 숨기기
-
-  // 게임 시작 로직 추가
-  // 예: Matter.js 엔진 시작 등
 }
 
-// module aliases
+// 모듈 설정
 var Engine = Matter.Engine,
   Render = Matter.Render,
   Runner = Matter.Runner,
@@ -107,14 +87,14 @@ var Engine = Matter.Engine,
   Body = Matter.Body,
   Events = Matter.Events;
 
-// create an engine
+// 엔진 설정
 var engine = Engine.create({
   timing: {
     timeScale: 1,
   },
 });
 
-// create a renderer
+//렌더 설정
 var render = Render.create({
   element: game,
   engine: engine,
@@ -126,38 +106,14 @@ var render = Render.create({
   },
 });
 
-// create runner
+//러너 설정
 var runner = Runner.create({
   isFixed: true,
 });
 
 const world = engine.world;
 
-const leftWall = Bodies.rectangle(0, 395, 30, 790, {
-  isStatic: true,
-  render: { fillStyle: "#E6B143" },
-});
-
-const rightWall = Bodies.rectangle(480, 395, 30, 790, {
-  isStatic: true,
-  render: { fillStyle: "#E6B143" },
-});
-
-const ground = Bodies.rectangle(310, 720, 620, 60, {
-  name: "ground",
-  isStatic: true,
-  render: { fillStyle: "#E6B143" },
-});
-
-const topLine = Bodies.rectangle(310, 120, 620, 2, {
-  name: "Top Line",
-  isStatic: true,
-  isSensor: true,
-  render: { fillStyle: "#E6B143" },
-});
-
-Composite.add(world, [leftWall, rightWall, ground, topLine]);
-
+//과일 선언&추가
 let currentBody = null;
 let currentFruit = null;
 let disable = false;
@@ -169,6 +125,43 @@ let score = 0;
 
 let start_time;
 let end_time;
+
+function setGame() {
+  //게임 내의 벽 생성
+  const leftWall = Bodies.rectangle(0, 395, 30, 790, {
+    isStatic: true,
+    render: { fillStyle: "#E6B143" },
+  });
+
+  const rightWall = Bodies.rectangle(480, 395, 30, 790, {
+    isStatic: true,
+    render: { fillStyle: "#E6B143" },
+  });
+
+  const ground = Bodies.rectangle(310, 720, 620, 60, {
+    name: "ground",
+    isStatic: true,
+    render: { fillStyle: "#E6B143" },
+  });
+
+  const topLine = Bodies.rectangle(310, 120, 620, 2, {
+    name: "Top Line",
+    isStatic: true,
+    isSensor: true,
+    render: { fillStyle: "#E6B143" },
+  });
+
+  Composite.add(world, [leftWall, rightWall, ground, topLine]);
+
+  currentBody = null;
+  currentFruit = null;
+  disable = false;
+  interval = null;
+  numSuika = 0;
+  isTouching = false;
+  isCollisionInProgress = false;
+  score = 0;
+}
 
 const FRUITS = [
   {
@@ -228,6 +221,7 @@ const FRUITS = [
   },
 ];
 
+//과일 생성
 function addFruit() {
   if (currentBody != null) {
     return;
@@ -258,6 +252,7 @@ function addFruit() {
   Composite.add(world, body);
 }
 
+//과일 움직임
 window.onkeydown = function (event) {
   if (!disable && currentBody != null && fps >= 60) {
     switch (event.code) {
@@ -347,7 +342,7 @@ window.ontouchend = function (event) {
 
 let collisionQueue = [];
 
-//충돌 큐의 데이터들이 유효한지 검사
+//충돌 큐의 데이터들이 유효한지 검사(이미 합쳐져서 없어진 과일들에 대한 처리)
 function filterCollisionQueue() {
   collisionQueue = collisionQueue.filter((collision) => {
     const bodyAExists = Composite.get(world, collision.bodyA.id, "body") !== null;
@@ -366,6 +361,11 @@ function processCollisions() {
 
   const bodyA = collision.bodyA;
   const bodyB = collision.bodyB;
+
+  if (bodyA.isSleeping || bodyB.isSleeping) {
+    return;
+  }
+
   const index = bodyA.index;
   const randomAngle = Math.random() * 2 * Math.PI;
 
@@ -376,6 +376,8 @@ function processCollisions() {
   if (!isMuted) {
     playEffectSound();
   }
+
+  //폭발 효과 생성
   drawExplosion(collision.collision.supports[0].x, collision.collision.supports[0].y);
 
   World.remove(world, [bodyA, bodyB]);
@@ -421,6 +423,7 @@ function processCollisions() {
 
 let explosions = [];
 
+//폭발 생성 & 애니메이션
 function drawExplosion(x, y) {
   const particles = [];
   const numParticles = 20;
@@ -487,7 +490,6 @@ function hexToRgb(hex) {
 }
 
 Events.on(engine, "collisionStart", function (event) {
-  // document.getElementById("asd").innerHTML = `점수 : ${score}`;
   if (isCollisionInProgress) {
     return;
   }
@@ -538,6 +540,7 @@ Events.on(engine, "collisionStart", function (event) {
   });
 });
 
+//크기 화면에 맞게 조정
 function resize() {
   game.height = 720;
   game.width = 480;
@@ -553,10 +556,12 @@ function resize() {
   Render.setPixelRatio(render, parent.style.zoom * 2);
 }
 
+//화면 비를 통해서 모바일인지 체크
 function isMobile() {
   return window.innerHeight / window.innerWidth >= 1.49;
 }
 
+//모든 객체 반환
 function getAllObjectPositions() {
   const allBodies = Composite.allBodies(world);
 
@@ -588,23 +593,15 @@ function refreshLoop() {
     }
 
     engine.timing.timeScale = 100 / (tempFPS - 1);
-    document.getElementById("asd").innerHTML = `점수 : ${score} `;
-
-    //step
+    document.getElementById("score").innerHTML = `점수 : ${score} `;
 
     refreshLoop();
   });
 }
 
-function loop() {
-  setTimeout(function () {
-    // console.log(getAllObjectPositions());
-    loop();
-  }, 1000);
-}
-
 const imagePaths = [];
 
+//과일 이미지 미리 로드해서 딜레이 제거
 function preloadImages(imagePaths, callback) {
   let loadedImages = 0;
 
@@ -631,6 +628,7 @@ function preloadImages(imagePaths, callback) {
   console.log("모든 이미지가 성공적으로 로드되었습니다.");
 }
 
+//화면 활성화, 비활성화시 사용할 함수들
 function handleVisibilityChange() {
   if (document.visibilityState === "visible") {
     // 화면이 활성화 상태로 변경될 때 수행할 로직
@@ -645,8 +643,6 @@ function handleVisibilityChange() {
 
     preloadImages(imagePaths);
   } else {
-    // 화면이 비활성화 상태로 변경될 때 수행할 로직
-
     //배경음 중지
     backgroundAudio.pause();
 
@@ -654,15 +650,23 @@ function handleVisibilityChange() {
   }
 }
 
+//메인함수
 function main() {
+  setGame();
   for (let Fruit of FRUITS) {
     imagePaths.push(`${Fruit.name}.png`);
   }
-  preloadImages(imagePaths);
-  // run the renderer
-  Render.run(render);
 
-  // run the engine
+  if (isMobile()) {
+    startScreen.innerHTML = "터치 시 게임 시작";
+    keyexpl.style.display = "none";
+  } else {
+    startScreen.innerHTML = "아무 키 입력 시 시작 ";
+  }
+
+  preloadImages(imagePaths);
+
+  Render.run(render);
   Runner.run(runner, engine);
 
   resize();
@@ -672,7 +676,6 @@ function main() {
   document.addEventListener("visibilitychange", handleVisibilityChange);
 
   addFruit();
-  // loop();
 }
 
 main();

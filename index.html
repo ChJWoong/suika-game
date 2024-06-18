@@ -5,6 +5,9 @@
     <meta charset="utf-8" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet" />
     <title>Suika-Game</title>
     <style>
       .html,
@@ -50,6 +53,9 @@
         align-items: center;
         font-size: 2em;
         z-index: 20; /* 가장 위에 표시되도록 */
+
+        font-family: "Jua", sans-serif;
+        font-weight: 400;
       }
       #mute-button {
         position: absolute;
@@ -62,13 +68,39 @@
         right: 0;
         top: 2%;
       }
+
+      #key {
+        position: absolute;
+        font-size: 30px;
+        padding: 5px 10px;
+        background: none;
+        border: none;
+        color: black;
+        cursor: pointer;
+        left: -50%;
+        top: 30%;
+
+        font-family: "Jua", sans-serif;
+        font-weight: 400;
+        color: black;
+      }
+
+      #score {
+        font-family: "Jua", sans-serif;
+        font-weight: 400;
+        color: black;
+      }
     </style>
   </head>
 
   <body>
     <div class="container">
       <div id="game-container">
-        <h1 id="asd">점수 : 0</h1>
+        <h1 id="score">점수 : 0</h1>
+        <h1 id="key">
+          A,D : 좌우이동 <br />
+          S : 떨어트리기
+        </h1>
         <button id="mute-button"><i class="fas fa-volume-up"></i></button>
         <div id="start-screen">게임을 시작하려면 터치하세요</div>
         <div id="game"></div>
