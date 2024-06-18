@@ -23,9 +23,9 @@ function startBackgroundMusic() {
   });
 }
 
-setInterval(function () {
-  playEffectSound();
-}, 1000);
+// setInterval(function () {
+//   playEffectSound();
+// }, 1000);
 
 function playEffectSound() {
   // // 재사용 가능한 오디오 요소를 찾기
@@ -39,6 +39,12 @@ function playEffectSound() {
   // }
 
   audioPool[0].play();
+  audioPool[0].onended = function () {
+    alert("The audio has ended");
+  };
+  audioPool[0].onplay = function () {
+    alert("The audio has started");
+  };
 }
 
 // 사용자 제스처 후에 오디오 컨텍스트 초기화 및 오디오 미리 재생
