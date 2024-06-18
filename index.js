@@ -23,6 +23,10 @@ function startBackgroundMusic() {
   });
 }
 
+setInterval(function () {
+  playEffectSound();
+}, 1000);
+
 function playEffectSound() {
   // // 재사용 가능한 오디오 요소를 찾기
   // const availableAudio = audioPool.find((audio) => audio.paused || audio.ended);
@@ -54,9 +58,9 @@ function playEffectSound() {
 
 // 페이지 로드 시 이벤트 리스너 추가
 window.addEventListener("load", () => {
-  document.addEventListener("click", initializeAudio, { once: true });
+  document.addEventListener("touchstart", initializeAudio, { once: true });
   document.addEventListener("keydown", initializeAudio, { once: true });
-  document.addEventListener("click", startBackgroundMusic, { once: true });
+  document.addEventListener("touchstart", startBackgroundMusic, { once: true });
   document.addEventListener("keydown", startBackgroundMusic, { once: true });
 });
 
