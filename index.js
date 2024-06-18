@@ -15,6 +15,17 @@ for (let i = 0; i < maxAudioInstances; i++) {
   const newEffectAudio = effectAudio.cloneNode();
   newEffectAudio.currentTime = 0.45;
   audioPool.push(newEffectAudio);
+
+  audioPool[i].onended = function () {
+    alert("The audio has ended");
+  };
+  audioPool[i].onplay = function () {
+    alert("The audio has started");
+    setTimeout(() => {
+      audioPool[i].pause();
+      audioPool[i].currentTime = 0.3;
+    }, 1000);
+  };
 }
 // Function to start background music
 function startBackgroundMusic() {
@@ -39,16 +50,6 @@ function playEffectSound() {
   // }
 
   audioPool[0].play();
-  audioPool[0].onended = function () {
-    alert("The audio has ended");
-  };
-  audioPool[0].onplay = function () {
-    alert("The audio has started");
-    setTimeout(() => {
-      audioPool[0].pause();
-      audioPool[0].currentTime = 0.45;
-    }, 1000);
-  };
 }
 
 // 사용자 제스처 후에 오디오 컨텍스트 초기화 및 오디오 미리 재생
