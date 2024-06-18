@@ -42,19 +42,19 @@ function playEffectSound() {
 }
 
 // 사용자 제스처 후에 오디오 컨텍스트 초기화 및 오디오 미리 재생
-// function initializeAudio() {
-//   if (effectAudio) {
-//     effectAudio
-//       .play()
-//       .then(() => {
-//         effectAudio.pause();
-//         effectAudio.currentTime = 0;
-//       })
-//       .catch((error) => {
-//         console.error("Failed to initialize effect audio:", error);
-//       });
-//   }
-// }
+function initializeAudio() {
+  // if (effectAudio) {
+  //   effectAudio
+  //     .play()
+  //     .then(() => {
+  //       effectAudio.pause();
+  //       effectAudio.currentTime = 0;
+  //     })
+  //     .catch((error) => {
+  //       console.error("Failed to initialize effect audio:", error);
+  //     });
+  // }
+}
 
 // 페이지 로드 시 이벤트 리스너 추가
 window.addEventListener("load", () => {
