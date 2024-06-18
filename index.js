@@ -38,6 +38,8 @@ function startBackgroundMusic() {
 //   playEffectSound();
 // }, 1000);
 
+alert("Background music has started");
+
 function playEffectSound() {
   // // 재사용 가능한 오디오 요소를 찾기
   // const availableAudio = audioPool.find((audio) => audio.paused || audio.ended);
