@@ -26,8 +26,12 @@ function playEffectSound() {
   });
 }
 
-// 사용자 제스처 후에 오디오 재생 허용
+// 사용자 제스처 후에 오디오 컨텍스트 초기화 및 오디오 미리 재생
 function initializeAudio() {
+  if (!audioContext) {
+    audioContext = new AudioContext();
+  }
+
   if (effectAudio) {
     effectAudio
       .play()
@@ -38,8 +42,6 @@ function initializeAudio() {
       .catch((error) => {
         console.error("Failed to initialize effect audio:", error);
       });
-  } else {
-    console.error("Failed to load effectaudio.");
   }
 }
 
