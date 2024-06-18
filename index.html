@@ -4,6 +4,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta charset="utf-8" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <title>Suika-Game</title>
     <style>
       .html,
@@ -27,6 +28,7 @@
 
       #game-container {
         height: 100%;
+        position: relative;
       }
 
       #explosionCanvas {
@@ -35,6 +37,31 @@
         pointer-events: none; /* 클릭이 캔버스를 통해 전달되도록 */
         z-index: 10; /* 다른 요소 위에 표시되도록 */
       }
+      #start-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 2em;
+        z-index: 20; /* 가장 위에 표시되도록 */
+      }
+      #mute-button {
+        position: absolute;
+        font-size: 2em;
+        padding: 5px 10px;
+        background: none;
+        border: none;
+        color: black;
+        cursor: pointer;
+        right: 0;
+        top: 2%;
+      }
     </style>
   </head>
 
@@ -42,6 +69,8 @@
     <div class="container">
       <div id="game-container">
         <h1 id="asd">점수 : 0</h1>
+        <button id="mute-button"><i class="fas fa-volume-up"></i></button>
+        <div id="start-screen">게임을 시작하려면 터치하세요</div>
         <div id="game"></div>
         <canvas id="explosionCanvas" width="480" height="720"></canvas>
       </div>

@@ -3,31 +3,26 @@ const game = document.getElementById("game");
 const parent = document.getElementById("game-container");
 const explosionCanvas = document.getElementById("explosionCanvas");
 const explosionCtx = explosionCanvas.getContext("2d");
-
+const startScreen = document.getElementById("start-screen");
 // 오디오파일
 const backgroundAudio = document.getElementById("background-audio");
 const effectAudio = document.getElementById("effect-audio");
 const maxAudioInstances = 10; // 최대 오디오 인스턴스 수
+const muteButton = document.getElementById("mute-button");
 let audioPool = [];
+let isMuted = false;
 
 // 오디오 요소를 미리 클론하여 준비해 두기
-for (let i = 0; i < maxAudioInstances; i++) {
-  const newEffectAudio = effectAudio.cloneNode();
-  newEffectAudio.currentTime = 0.3;
-  audioPool.push(newEffectAudio);
-
-  audioPool[i].onended = function () {
-    audioPool[i].currentTime = 0.3;
-    // alert("The audio has ended");
-  };
-  audioPool[i].onplay = function () {
-    // alert("The audio has started");
-    // setTimeout(() => {
-    //   audioPool[i].pause();
-    //   audioPool[i].currentTime = 0.3;
-    // }, 1000);
-  };
+function setAudioClone() {
+  for (let i = 0; i < maxAudioInstances; i++) {
+    const newEffectAudio = effectAudio.cloneNode();
+    newEffectAudio.play().then(() => {
+      newEffectAudio.pause();
+    });
+    audioPool.push(newEffectAudio);
+  }
 }
+
 // Function to start background music
 function startBackgroundMusic() {
   backgroundAudio.play().catch((error) => {
@@ -35,16 +30,11 @@ function startBackgroundMusic() {
   });
 }
 
-// setInterval(function () {
-//   playEffectSound();
-// }, 1000);
-
-alert("Background music has started 2");
-
 function playEffectSound() {
   // // 재사용 가능한 오디오 요소를 찾기
   const availableAudio = audioPool.find((audio) => audio.paused || audio.ended);
   if (availableAudio) {
+    availableAudio.currentTime = 0.4;
     availableAudio.play().catch((error) => {
       console.error("Failed to play effect audio:", error);
     });
@@ -55,26 +45,57 @@ function playEffectSound() {
 
 // 사용자 제스처 후에 오디오 컨텍스트 초기화 및 오디오 미리 재생
 function initializeAudio() {
-  // if (effectAudio) {
-  //   effectAudio
-  //     .play()
-  //     .then(() => {
-  //       effectAudio.pause();
-  //       effectAudio.currentTime = 0;
-  //     })
-  //     .catch((error) => {
-  //       console.error("Failed to initialize effect audio:", error);
-  //     });
-  // }
+  if (effectAudio) {
+    effectAudio
+      .play()
+      .then(() => {
+        effectAudio.pause();
+        effectAudio.currentTime = 0;
+      })
+      .catch((error) => {
+        console.error("Failed to initialize effect audio:", error);
+      });
+  }
 }
 
+// 음소거 버튼 클릭 시 음소거/음소거 해제
+muteButton.addEventListener("click", () => {
+  isMuted = !isMuted;
+  muteButton.innerHTML = isMuted ? '<i class="fas fa-volume-mute"></i>' : '<i class="fas fa-volume-up"></i>';
+  if (isMuted) {
+    backgroundAudio.pause();
+  } else {
+    startBackgroundMusic();
+  }
+});
 // 페이지 로드 시 이벤트 리스너 추가
 window.addEventListener("load", () => {
-  document.addEventListener("touchstart", initializeAudio, { once: true });
-  document.addEventListener("keydown", initializeAudio, { once: true });
-  document.addEventListener("touchstart", startBackgroundMusic, { once: true });
-  document.addEventListener("keydown", startBackgroundMusic, { once: true });
+  if (isMobile()) {
+    startScreen.textContent = "터치 시 게임 시작";
+  } else {
+    startScreen.textContent = "아무 키 입력 시 시작";
+  }
+
+  document.addEventListener("click", handleUserGesture, { once: true });
+  document.addEventListener("keydown", handleUserGesture, { once: true });
 });
+
+// 이벤트 리스너를 통해 게임 시작
+function handleUserGesture() {
+  startGame();
+  document.removeEventListener("click", handleUserGesture);
+  document.removeEventListener("keydown", handleUserGesture);
+}
+
+function startGame() {
+  initializeAudio();
+  startBackgroundMusic();
+  setAudioClone();
+  startScreen.style.display = "none"; // 시작 화면 숨기기
+
+  // 게임 시작 로직 추가
+  // 예: Matter.js 엔진 시작 등
+}
 
 // module aliases
 var Engine = Matter.Engine,
@@ -352,8 +373,9 @@ function processCollisions() {
     return;
   }
   //효과음 재생
-  playEffectSound();
-
+  if (!isMuted) {
+    playEffectSound();
+  }
   drawExplosion(collision.collision.supports[0].x, collision.collision.supports[0].y);
 
   World.remove(world, [bodyA, bodyB]);
@@ -614,9 +636,11 @@ function handleVisibilityChange() {
     // 화면이 활성화 상태로 변경될 때 수행할 로직
 
     //배경음 재생
-    backgroundAudio.play().catch((error) => {
-      console.error("Failed to play background audio:", error);
-    });
+    if (!isMuted) {
+      backgroundAudio.play().catch((error) => {
+        console.error("Failed to play background audio:", error);
+      });
+    }
     console.log("화면이 활성화되었습니다. ");
 
     preloadImages(imagePaths);
