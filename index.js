@@ -26,8 +26,8 @@ function playEffectSound() {
   // 재사용 가능한 오디오 요소를 찾기
   const availableAudio = audioPool.find((audio) => audio.paused || audio.ended);
   if (availableAudio) {
-    availableAudio.currentTime = 0.3;
-    console.log(audioPool);
+    availableAudio.currentTime = 0.45;
+
     availableAudio.play().catch((error) => {
       console.error("Failed to play effect audio:", error);
     });
