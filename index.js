@@ -13,6 +13,7 @@ let audioPool = [];
 // 오디오 요소를 미리 클론하여 준비해 두기
 for (let i = 0; i < maxAudioInstances; i++) {
   const newEffectAudio = effectAudio.cloneNode();
+  newEffectAudio.currentTime = 0.45;
   audioPool.push(newEffectAudio);
 }
 // Function to start background music
@@ -23,17 +24,17 @@ function startBackgroundMusic() {
 }
 
 function playEffectSound() {
-  // 재사용 가능한 오디오 요소를 찾기
-  const availableAudio = audioPool.find((audio) => audio.paused || audio.ended);
-  if (availableAudio) {
-    availableAudio.currentTime = 0.45;
+  // // 재사용 가능한 오디오 요소를 찾기
+  // const availableAudio = audioPool.find((audio) => audio.paused || audio.ended);
+  // if (availableAudio) {
+  //   availableAudio.play().catch((error) => {
+  //     console.error("Failed to play effect audio:", error);
+  //   });
+  // } else {
+  //   console.warn("No available audio instances to play effect sound.");
+  // }
 
-    availableAudio.play().catch((error) => {
-      console.error("Failed to play effect audio:", error);
-    });
-  } else {
-    console.warn("No available audio instances to play effect sound.");
-  }
+  audioPool[0].play();
 }
 
 // 사용자 제스처 후에 오디오 컨텍스트 초기화 및 오디오 미리 재생
