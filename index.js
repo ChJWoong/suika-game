@@ -21,10 +21,10 @@ for (let i = 0; i < maxAudioInstances; i++) {
   };
   audioPool[i].onplay = function () {
     alert("The audio has started");
-    setTimeout(() => {
-      audioPool[i].pause();
-      audioPool[i].currentTime = 0.3;
-    }, 1000);
+    // setTimeout(() => {
+    //   audioPool[i].pause();
+    //   audioPool[i].currentTime = 0.3;
+    // }, 1000);
   };
 }
 // Function to start background music
@@ -50,7 +50,7 @@ function playEffectSound() {
   // }
 
   audioPool[0].pause();
-  audioPool[0].currentTime = 0.3;
+  audioPool[0].currentTime = 0;
   audioPool[0].play();
 }
 
