@@ -13,14 +13,15 @@ let audioPool = [];
 // 오디오 요소를 미리 클론하여 준비해 두기
 for (let i = 0; i < maxAudioInstances; i++) {
   const newEffectAudio = effectAudio.cloneNode();
-  newEffectAudio.currentTime = 0.45;
+  newEffectAudio.currentTime = 0.3;
   audioPool.push(newEffectAudio);
 
   audioPool[i].onended = function () {
-    alert("The audio has ended");
+    audioPool[i].currentTime = 0.3;
+    // alert("The audio has ended");
   };
   audioPool[i].onplay = function () {
-    alert("The audio has started");
+    // alert("The audio has started");
     // setTimeout(() => {
     //   audioPool[i].pause();
     //   audioPool[i].currentTime = 0.3;
@@ -38,22 +39,18 @@ function startBackgroundMusic() {
 //   playEffectSound();
 // }, 1000);
 
-alert("Background music has started");
+alert("Background music has started 2");
 
 function playEffectSound() {
   // // 재사용 가능한 오디오 요소를 찾기
-  // const availableAudio = audioPool.find((audio) => audio.paused || audio.ended);
-  // if (availableAudio) {
-  //   availableAudio.play().catch((error) => {
-  //     console.error("Failed to play effect audio:", error);
-  //   });
-  // } else {
-  //   console.warn("No available audio instances to play effect sound.");
-  // }
-
-  audioPool[0].pause();
-  audioPool[0].currentTime = 0.45;
-  audioPool[0].play();
+  const availableAudio = audioPool.find((audio) => audio.paused || audio.ended);
+  if (availableAudio) {
+    availableAudio.play().catch((error) => {
+      console.error("Failed to play effect audio:", error);
+    });
+  } else {
+    console.warn("No available audio instances to play effect sound.");
+  }
 }
 
 // 사용자 제스처 후에 오디오 컨텍스트 초기화 및 오디오 미리 재생
