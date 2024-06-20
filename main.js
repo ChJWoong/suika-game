@@ -321,7 +321,6 @@ window.addEventListener(
   { passive: false }
 );
 
-//preventdefault를 위해 이벤트리스너 사용
 window.addEventListener(
   "touchmove",
   function (event) {
