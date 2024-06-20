@@ -659,14 +659,11 @@ function handleVisibilityChange() {
         console.error("Failed to play background audio:", error);
       });
     }
-    console.log("화면이 활성화되었습니다. ");
 
     preloadImages(imagePaths);
   } else {
     //배경음 중지
     backgroundAudio.pause();
-
-    console.log("화면이 비활성화되었습니다.");
   }
 }
 
