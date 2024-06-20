@@ -301,48 +301,54 @@ window.onkeyup = function (event) {
   }
 };
 
-window.ontouchstart = function (event) {
-  //음소거 버튼 누를때는 과일 떨어트리지않음
-  if (event.target == muteButton.className || muteButton.contains(event.target) || event.target == startScreen) {
-    return;
-  }
-
-  if (!disable && !isTouching && currentBody != null) {
-    let touch = event.touches[0];
-    let touchX = touch.clientX / parent.style.zoom;
-    isTouching = true;
-    if (touchX - currentFruit.radius > 15 && touchX + currentFruit.radius < 465) {
-      Body.setPosition(currentBody, { x: touchX, y: currentBody.position.y });
+window.addEventListener(
+  "touchstart",
+  function (event) {
+    //음소거 버튼 누를때는 과일 떨어트리지않음
+    if (event.target == muteButton.className || muteButton.contains(event.target) || event.target == startScreen) {
+      return;
     }
-  } else {
-    event.preventDefault();
-    return;
-  }
-};
 
-window.ontouchmove = function (event) {
-  //음소거 버튼 누를때는 과일 떨어트리지않음
-  if (event.target == muteButton.className || muteButton.contains(event.target) || event.target == startScreen) {
-    return;
-  }
-
-  event.preventDefault();
-  if (!disable && currentBody != null) {
-    let touch = event.touches[0];
-
-    let touchX = touch.clientX / parent.style.zoom;
-
-    if (touchX - currentFruit.radius > 15 && touchX + currentFruit.radius < 465) {
-      if (isMobile) {
-        Body.setPosition(currentBody, { x: touchX, y: currentBody.position.y });
-      } else {
+    if (!disable && !isTouching && currentBody != null) {
+      let touch = event.touches[0];
+      let touchX = touch.clientX / parent.style.zoom;
+      isTouching = true;
+      if (touchX - currentFruit.radius > 15 && touchX + currentFruit.radius < 465) {
         Body.setPosition(currentBody, { x: touchX, y: currentBody.position.y });
       }
     }
-  }
-};
+  },
+  { passive: false }
+);
 
-window.ontouchend = function (event) {
+//preventdefault를 위해 이벤트리스너 사용
+window.addEventListener(
+  "touchmove",
+  function (event) {
+    event.preventDefault();
+    //음소거 버튼 누를때는 과일 떨어트리지않음
+    if (event.target == muteButton.className || muteButton.contains(event.target) || event.target == startScreen) {
+      return;
+    }
+
+    if (!disable && currentBody != null) {
+      let touch = event.touches[0];
+
+      let touchX = touch.clientX / parent.style.zoom;
+
+      if (touchX - currentFruit.radius > 15 && touchX + currentFruit.radius < 465) {
+        if (isMobile) {
+          Body.setPosition(currentBody, { x: touchX, y: currentBody.position.y });
+        } else {
+          Body.setPosition(currentBody, { x: touchX, y: currentBody.position.y });
+        }
+      }
+    }
+  },
+  { passive: false }
+);
+
+window.addEventListener("touchend", function (event) {
   //음소거 버튼 누를때는 과일 떨어트리지않음
   if (event.target == muteButton.className || muteButton.contains(event.target) || event.target == startScreen) {
     return;
@@ -353,7 +359,7 @@ window.ontouchend = function (event) {
     currentBody.isSleeping = false;
     start_time = new Date().getTime();
   }
-};
+});
 
 let collisionQueue = [];
 
