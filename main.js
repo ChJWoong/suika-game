@@ -585,6 +585,7 @@ function getAllObjectPositions() {
 
 const times = [];
 let tempFPS = 0;
+let gameOver = false;
 
 //충돌 체크용
 Matter.Events.on(engine, "beforeUpdate", checkForGameOver);
@@ -612,9 +613,13 @@ function getBodiesAboveTopLine() {
 
 // 게임 오버 체크 함수
 function checkForGameOver() {
+  if (gameOver) {
+    return;
+  }
   const bodiesAboveTopLine = getBodiesAboveTopLine();
 
   if (bodiesAboveTopLine.length > 0) {
+    gameOver = true;
     alert("게임 오버");
     location.reload(true);
   }
