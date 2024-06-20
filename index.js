@@ -59,14 +59,14 @@ muteButton.addEventListener("click", () => {
 // 페이지 로드 시 제스쳐핸들러 함수 호출
 window.addEventListener("load", () => {
   //오디오를 재생하기 위해 제스쳐를 입력받아야함
-  document.addEventListener("touchstart", handleUserGesture, { once: true });
+  document.addEventListener("click", handleUserGesture, { once: true });
   document.addEventListener("keydown", handleUserGesture, { once: true });
 });
 
 //제스쳐 입력 받은 후 이벤트 리스너 제거 & 게임 시작
 function handleUserGesture() {
   startGame();
-  document.removeEventListener("touchstart", handleUserGesture);
+  document.removeEventListener("click", handleUserGesture);
   document.removeEventListener("keydown", handleUserGesture);
 }
 
@@ -302,6 +302,11 @@ window.onkeyup = function (event) {
 };
 
 window.ontouchstart = function (event) {
+  //음소거 버튼 누를때는 과일 떨어트리지않음
+  if (event.target == muteButton.className || muteButton.contains(event.target) || event.target == startScreen) {
+    return;
+  }
+
   if (!disable && !isTouching && currentBody != null) {
     let touch = event.touches[0];
     let touchX = touch.clientX / parent.style.zoom;
@@ -316,6 +321,11 @@ window.ontouchstart = function (event) {
 };
 
 window.ontouchmove = function (event) {
+  //음소거 버튼 누를때는 과일 떨어트리지않음
+  if (event.target == muteButton.className || muteButton.contains(event.target) || event.target == startScreen) {
+    return;
+  }
+
   event.preventDefault();
   if (!disable && currentBody != null) {
     let touch = event.touches[0];
@@ -333,6 +343,11 @@ window.ontouchmove = function (event) {
 };
 
 window.ontouchend = function (event) {
+  //음소거 버튼 누를때는 과일 떨어트리지않음
+  if (event.target == muteButton.className || muteButton.contains(event.target) || event.target == startScreen) {
+    return;
+  }
+
   if (!disable && isTouching && currentBody != null && fps >= 60) {
     disable = true;
     currentBody.isSleeping = false;
