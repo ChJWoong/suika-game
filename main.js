@@ -524,18 +524,6 @@ Events.on(engine, "collisionStart", function (event) {
       }
     }
 
-    // Top Line에 닿은 경우 처리
-    if (!disable && (collision.bodyA.name === "Top Line" || collision.bodyB.name === "Top Line")) {
-      const body = collision.bodyA.name === "Top Line" ? collision.bodyB : collision.bodyA;
-
-      // 과일이 정지 상태일 때만 실패 메시지 표시
-      if (body.speed < 0.01) {
-        engine.timing.timeScale = 0;
-        alert("실패!");
-        location.reload(true);
-      }
-    }
-
     //떨어트린 과일이 땅 or 과일과 만났을때 disable 해제
     if (
       currentBody != null &&
@@ -597,6 +585,45 @@ function getAllObjectPositions() {
 
 const times = [];
 let tempFPS = 0;
+let gameOver;
+let topLine;
+
+//충돌 체크용
+Matter.Events.on(engine, "beforeUpdate", checkForGameOver);
+
+// 현재 topLine과 충돌 중인 물체를 반환하는 함수
+function getBodiesAboveTopLine() {
+  const bodiesAboveTopLine = [];
+  const allBodies = Matter.Composite.allBodies(engine.world);
+  const topLineBody = allBodies.find((body) => body.name === "Top Line");
+
+  if (!topLineBody) {
+    return bodiesAboveTopLine; // topLineBody가 존재하지 않으면 빈 배열 반환
+  }
+
+  const topLineY = topLineBody.position.y;
+
+  allBodies.forEach((body) => {
+    if (body !== topLineBody && body.position.y < topLineY && body.isSleeping == false && !disable) {
+      bodiesAboveTopLine.push(body);
+    }
+  });
+
+  return bodiesAboveTopLine;
+}
+
+// 게임 오버 체크 함수
+function checkForGameOver() {
+  if (gameOver) return;
+
+  const bodiesAboveTopLine = getBodiesAboveTopLine();
+
+  if (bodiesAboveTopLine.length > 0) {
+    gameOver = true;
+    alert("게임 오버");
+    location.reload(true);
+  }
+}
 
 //프레임 루프
 function refreshLoop() {
