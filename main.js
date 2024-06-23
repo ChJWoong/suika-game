@@ -620,8 +620,16 @@ function checkForGameOver() {
 
   if (bodiesAboveTopLine.length > 0) {
     gameOver = true;
-    alert("게임 오버");
-    location.reload(true);
+
+    setTimeout(() => {
+      const bodiesAboveTopLine2 = getBodiesAboveTopLine();
+      if (bodiesAboveTopLine.length > 0) {
+        alert("게임 오버");
+        location.reload(true);
+      } else {
+        gameOver = false;
+      }
+    }, 1000);
   }
 }
 
